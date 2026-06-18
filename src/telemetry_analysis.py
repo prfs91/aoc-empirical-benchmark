@@ -1,0 +1,1 @@
+# Processamento pesado dos 80 logs do HWiNFO

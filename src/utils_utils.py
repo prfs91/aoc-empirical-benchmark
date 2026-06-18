@@ -1,0 +1,1 @@
+# Funções genéricas (ex: ler arquivos, calcular mediana amostral)

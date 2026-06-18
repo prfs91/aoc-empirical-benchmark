@@ -1,0 +1,1 @@
+# Processamento das 20 rodadas do Geekbench de cada máquina

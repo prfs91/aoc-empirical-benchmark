@@ -1,0 +1,31 @@
+# ==========================================
+# 1. Notebooks Locais de Automação/Setup
+# ==========================================
+00_setup_drive_environment.ipynb
+99_git_backup_manager.ipynb
+
+# ==========================================
+# 2. Arquivos Temporários do Google Colab
+# ==========================================
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/
+sample_data/
+
+# ==========================================
+# 3. Proteção de Dados e Credenciais
+# ==========================================
+# Oculta chaves, tokens ou arquivos de configuração que você criar localmente
+.env
+*.env
+secret_token.txt
+~/.gitconfig
+
+# ==========================================
+# 4. Arquivos Temporários de Sistema (Python e SO)
+# ==========================================
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+Thumbs.db
+repo.tar.gz

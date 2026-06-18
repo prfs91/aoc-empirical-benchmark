@@ -1,0 +1,1 @@
+# Geração padronizada de gráficos (Layout, cores e fontes do artigo)
