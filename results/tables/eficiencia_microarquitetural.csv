@@ -1,0 +1,5 @@
+maquina,pasta,score_multicore_medio,potencia_cpu_media_w,clock_efetivo_medio_mhz,desempenho_por_watt,ipc_relativo,pct_tempo_throttling
+Máquina A,machine_a,8116.5,,,,,
+Máquina B,machine_b,6107.7,,,,,
+Máquina C,machine_c,2415.5,,,,,
+Máquina D,machine_d,2878.95,,,,,

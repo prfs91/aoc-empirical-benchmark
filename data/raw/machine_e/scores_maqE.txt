@@ -1,0 +1,1 @@
+Rodada;Single_Core;Multi_Core

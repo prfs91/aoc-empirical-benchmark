@@ -1,0 +1,6 @@
+maquina,pasta,Single_Core_media,Single_Core_desvio_padrao,Single_Core_coef_variacao_pct,Single_Core_minimo,Single_Core_maximo,Single_Core_n_rodadas,Multi_Core_media,Multi_Core_desvio_padrao,Multi_Core_coef_variacao_pct,Multi_Core_minimo,Multi_Core_maximo,Multi_Core_n_rodadas
+Máquina A,machine_a,2216.2,21.2,0.96,2139.0,2240.0,20.0,8116.5,135.26,1.67,7767.0,8273.0,20.0
+Máquina B,machine_b,1851.95,91.09,4.92,1590.0,1910.0,20.0,6107.7,155.71,2.55,5692.0,6300.0,20.0
+Máquina C,machine_c,932.0,95.94,10.29,705.0,987.0,20.0,2415.5,321.82,13.32,1671.0,2653.0,20.0
+Máquina D,machine_d,1322.45,9.63,0.73,1291.0,1334.0,20.0,2878.95,101.57,3.53,2580.0,2988.0,20.0
+Máquina F,machine_f,2828.3,21.82,0.77,2776.0,2849.0,20.0,14241.0,85.17,0.6,14045.0,14414.0,20.0

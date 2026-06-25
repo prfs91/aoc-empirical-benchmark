@@ -3,7 +3,8 @@
 # ==========================================
 00_setup_drive_environment.ipynb
 99_git_backup_manager.ipynb
-testes_codigo.ipynb
+pipeline_telemetria_teste.py
+pipeline_telemetria_teste.ipynb
 
 # ==========================================
 # 2. Arquivos Temporários do Google Colab

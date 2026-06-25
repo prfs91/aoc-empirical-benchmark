@@ -1,0 +1,234 @@
+# FICHAMENTO CIENTÍFICO — Computing Performance Benchmarks among CPU, GPU, and FPGA
+
+> **Veredito de Relevância:** O artigo SERÁ ÚTIL para o projeto de AOC. Trata-se de um relatório técnico de projeto de graduação (Major Qualifying Project) cujo escopo central — benchmarking comparativo de CPU/GPU/FPGA, métricas de desempenho (tempo de execução, throughput, speedup), cálculo de desvio padrão amostral sobre rodadas repetidas, gargalo de transferência de memória via barramento, e paralelismo multicore/multithread — converge diretamente com a Fundamentação Teórica e a Metodologia estatística do nosso artigo.
+
+---
+
+## 1. IDENTIFICAÇÃO BIBLIOGRÁFICA REGULAR
+
+- **Referência Textual Padrão SBC** (para `\begin{thebibliography}` no `main.tex`):
+
+```
+CULLINAN, C.; WYANT, C.; FRATTESI, T. Computing Performance Benchmarks among CPU, GPU, and FPGA. Orientador: Xinming Huang. Worcester: Worcester Polytechnic Institute (WPI), 2012. Relatório de Major Qualifying Project (MQP) — patrocinado por MathWorks. 124 p.
+```
+
+- **Código BibTeX Completo (.bib)** (para `sbc-template.bib`, siglas protegidas com chaves):
+
+```bibtex
+@techreport{cullinan2012benchmarks,
+  author      = {Cullinan, Christopher and Wyant, Christopher and Frattesi, Timothy},
+  title       = {Computing Performance Benchmarks among {CPU}, {GPU}, and {FPGA}},
+  institution = {Worcester Polytechnic Institute ({WPI})},
+  year        = {2012},
+  type        = {Major Qualifying Project ({MQP}) Report},
+  address     = {Worcester, MA, USA},
+  note        = {Orientador: Xinming Huang. Patrocinado por MathWorks},
+  pages       = {124}
+}
+```
+
+> **Nota de auditoria bibliográfica:** Não foi localizado DOI, ISBN ou identificador de periódico/conferência no documento — trata-se de relatório técnico institucional (não publicação revisada por pares), disponibilizado no repositório digital do WPI. Caso o grupo deseje, pode-se complementar o campo `url` com o link do repositório WPI (Digital WPI) quando confirmado.
+
+---
+
+## 2. METADADOS E OBJETIVOS DO DOCUMENTO
+
+- **Grau/Tipo:** Relatório de Projeto de Graduação (Major Qualifying Project — MQP), equivalente a um Trabalho de Conclusão de Curso (TCC) de Engenharia nos EUA. Não é artigo de conferência nem periódico.
+- **Instituição/Editora:** Worcester Polytechnic Institute (WPI), Worcester, Massachusetts, EUA. Projeto patrocinado pela empresa MathWorks. Orientador: Prof. Xinming Huang.
+- **Autores e divisão de responsabilidades:** Christopher Cullinan (CPU Multicore — 34 benchmarks na máquina AMAX), Timothy Frattesi (GPU — 24 benchmarks em GeForce GTX 460 e 9800 GTX+), Christopher Wyant (FPGA — 8 benchmarks em placa Virtex-5 via Xilinx ISim).
+- **Palavras-Chave Originais:** O documento não apresenta uma lista formal de *keywords*, mas os termos centrais recorrentes no Resumo/Abstract e ao longo do texto são: *computing performance benchmarks*, *CPU*, *GPU*, *FPGA*, *high performance computing*, *parallel processing*, *execution time*, *transfer time*, *streaming*.
+- **Resumo do Escopo Geral:** O projeto conduziu benchmarks de desempenho computacional comparando três plataformas de hardware — CPUs multicore (2× Intel Xeon X5650), GPUs (NVIDIA GeForce GTX 460 e 9800 GTX+) e um FPGA (família Virtex-5) — totalizando 66 benchmarks extraídos de sete suítes (SPEC CPU2006, Rodinia, John Burkardt, SHOC, Parboil e núcleos gerados via Xilinx Core Generator/MATLAB Simulink HDL Coder). Os resultados indicam que GPUs superam as demais plataformas em tempo de execução bruto, CPUs superam quando se soma o tempo de transferência de dados ao tempo de execução, e FPGAs superam para algoritmos fixos com processamento em streaming. O relatório fecha com recomendações de pesquisas futuras, incluindo testes em Accelerated Processing Units (APUs).
+
+---
+
+## 3. FICHAMENTO ESPECÍFICO E DETALHADO (CITAÇÕES DIRETAS E INDIRETAS)
+
+### 3.1. Conceito/Teoria: Taxonomia de Benchmarks (Real Applications, Small Benchmarks, Suites, Synthetic)
+
+- **Citação Direta (Ipsis Litteris):** "Benchmarks come in four different types, each having its own strength and weaknesses: real applications, small benchmarks, benchmark suites, and synthetic benchmarks." (Página 24).
+- **Paráfrase (Citação Indireta Acadêmica):** Cullinan, Wyant e Frattesi (2012) classificam os benchmarks computacionais em quatro categorias com vantagens e limitações distintas: aplicações reais, que refletem fielmente a carga de trabalho cotidiana do usuário mas dificultam o isolamento de gargalos específicos; pequenos benchmarks (*small benchmarks*), trechos de código reduzidos e rápidos de compilar, porém vulneráveis a otimizações artificiais do compilador; suítes de benchmark, compilações abrangentes de programas representativos de cargas de trabalho diversas (a exemplo da SPEC, fundada em 1989); e benchmarks sintéticos, que reproduzem características de desempenho sem executar tarefa funcional real (Página 24-25).
+- **Onde Encaixar no Artigo LaTeX:** Fundamentação Teórica / Metodologia (justificativa da escolha do Geekbench 6 como benchmark sintético/suíte de avaliação).
+- **Mapeamento de Colunas e Arquivos de Teste:** Esta classificação fundamenta teoricamente a escolha do Geekbench 6 como instrumento de medição em nosso projeto. Os arquivos `scores_maq*.txt` (colunas `Single_Core` e `Multi_Core`) representam a aplicação prática de um benchmark do tipo "suíte sintética", análogo aos suítes SPEC CPU2006 e SHOC discutidos no artigo.
+
+---
+
+### 3.2. Conceito/Teoria: Necessidade de Múltiplas Iterações e Cálculo de Média
+
+- **Citação Direta (Ipsis Litteris):** "It is always important to run many iterations of a benchmark. Timings will change and an average of all iterations should be used to provide a more accurate picture for comparisons." (Página 26).
+- **Paráfrase (Citação Indireta Acadêmica):** Os autores enfatizam que medições isoladas de tempo de execução são insuficientes para caracterizar o desempenho real de um sistema, pois variações naturais entre execuções tornam indispensável a repetição do experimento e o cálculo da média aritmética dos resultados obtidos, prática que confere maior robustez estatística à comparação entre plataformas (Página 26).
+- **Onde Encaixar no Artigo LaTeX:** Metodologia (justificativa de termos executado 20 rodadas por máquina no Geekbench 6).
+- **Mapeamento de Colunas e Arquivos de Teste:** Sustenta diretamente a decisão metodológica do nosso grupo de coletar 20 rodadas por máquina nos arquivos `scores_maq*.txt` (colunas `Single_Core`, `Multi_Core`), em vez de uma única execução, permitindo o cálculo de média aritmética e desvio padrão amostral sobre as 20 observações de cada máquina.
+
+---
+
+### 3.3. Conceito/Teoria: Cálculo Empírico de Desvio Padrão Amostral em Benchmarks Repetidos
+
+- **Citação Direta (Ipsis Litteris):** Da Tabela do Apêndice 7.1 (Parboil Results 9800 GTX+), reproduzindo o cabeçalho de colunas: "Parboil | Iteration 1 | Iteration 2 | Iteration 3 | Average | SD" com valores de exemplo para o subteste CUTCP-GPU: "0.036803 | 0.036811 | 0.036804 | 0.036806 | 4.3589E-06" (Página 76).
+- **Paráfrase (Citação Indireta Acadêmica):** No apêndice de resultados, os autores reportam, para cada subteste da suíte Parboil, três iterações de execução, a média aritmética (*Average*) e o desvio padrão amostral (*SD*) calculados sobre essas iterações, demonstrando empiricamente como a variabilidade entre execuções pode ser quantificada mesmo em medições de tempo na ordem de microssegundos a segundos (Página 76-79).
+- **Onde Encaixar no Artigo LaTeX:** Metodologia (fórmula de desvio padrão) e Resultados e Discussão (interpretação da variabilidade entre rodadas).
+- **Mapeamento de Colunas e Arquivos de Teste:** Valida diretamente nossa metodologia estatística aplicada às colunas `Single_Core` e `Multi_Core` dos arquivos `scores_maq*.txt` (cálculo de Média e SD sobre as 20 rodadas) e, por extensão, à análise da variabilidade segundo a segundo das colunas de telemetria nos 80 arquivos `.CSV` do HWiNFO64, especialmente 'Relógios efetivos núcleo (avg) (MHz)', 'Uso total da CPU (%)' e 'CPU Inteira (°C)', cuja alta variância pode ser comparada à variância observada nos scores do Geekbench 6.
+
+---
+
+### 3.4. Conceito/Teoria: Métricas de Desempenho — Tempo de Execução vs. Throughput vs. MIPS
+
+- **Citação Direta (Ipsis Litteris):** "This little guy could execute 92,000 instructions per second with a single instruction cycle of 10.8 microseconds and a transistor count of 2,300." referindo-se ao Intel 4004 (Página 2); e "This legendary device operated at a whopping 60 MHz and 100 Millions of Instructions per Second (MIPS)." referindo-se ao Intel Pentium (Página 3).
+- **Paráfrase (Citação Indireta Acadêmica):** O relatório situa historicamente a métrica MIPS (Milhões de Instruções por Segundo) como parâmetro inicial de avaliação de desempenho de processadores, exemplificando sua evolução desde o Intel 4004 (1971), capaz de executar 92.000 instruções por segundo, até o Intel Pentium (1993), que operava a 60 MHz e atingia 100 MIPS (Página 2-3).
+- **Onde Encaixar no Artigo LaTeX:** Fundamentação Teórica (seção de métricas de desempenho — MIPS, FLOPS e Scores Sintéticos).
+- **Mapeamento de Colunas e Arquivos de Teste:** Sustenta teoricamente a comparação entre os scores brutos do Geekbench 6 (`scores_maq*.txt`, colunas `Single_Core`/`Multi_Core`) e a métrica MIPS, ambas representando taxas de processamento de instruções, ainda que o Geekbench utilize um score composto e ponderado em vez de uma contagem direta de instruções por segundo.
+
+---
+
+### 3.5. Conceito/Teoria: Throughput Real vs. Tempo de Transferência de Dados (Gargalo de Barramento)
+
+- **Citação Direta (Ipsis Litteris):** "The GPU throughput at an FFT this size is 311 times more than that of the FPGA and 3351 times faster than the CPU Multicore with 12 threads. What is missing from this data is the transfer time for the GPU to send and receive the data. This time is 69 ms for this size data. With this time added in the GPU actually becomes the slowest of all three platforms." (Página 54-55).
+- **Paráfrase (Citação Indireta Acadêmica):** Os autores demonstram que, embora a GPU apresente o menor tempo de execução pura no benchmark FFT (262.155 pontos), ao se contabilizar o tempo de transferência de dados entre memória do hospedeiro e memória do dispositivo (69 ms), a GPU passa a ser a plataforma mais lenta dentre as três avaliadas, invertendo o ranking de desempenho e evidenciando que o gargalo de comunicação via barramento pode anular ganhos de processamento paralelo (Página 54-55).
+- **Onde Encaixar no Artigo LaTeX:** Fundamentação Teórica (Gargalo de Von Neumann / Barramento de Memória) e Resultados e Discussão.
+- **Mapeamento de Colunas e Arquivos de Teste:** Esta é uma das citações mais estrategicamente relevantes do documento para sustentar a discussão de gargalo de barramento de memória em nosso artigo. Embora nosso escopo não inclua GPU dedicada com transferência via PCIe explícita (Geekbench 6 mede desempenho local), o princípio é diretamente aplicável à relação entre 'Relógio da memória (MHz)' (Single-Channel 1333 MHz na Máquina D) e 'Taxa de leituras (MB/s)'/'Taxa de gravações (MB/s)' dos arquivos `.CSV`: o gargalo de banda de memória RAM Single-Channel pode limitar o ganho teórico de desempenho do processador, de forma análoga ao gargalo de transferência GPU↔CPU discutido pelos autores.
+
+---
+
+### 3.6. Conceito/Teoria: Velocidade de Memória Global vs. Local (Hierarquia de Memória)
+
+- **Citação Direta (Ipsis Litteris):** Da Tabela 5 (Global vs. Local Memory Speeds): valores de banda para memória Local em bloco de 64: "288 / 328" GB/sec (leitura/escrita) versus memória Global no mesmo tamanho de bloco: "5.8 / 3.5" GB/sec (Página 60).
+- **Paráfrase (Citação Indireta Acadêmica):** O estudo evidencia empiricamente que a memória local (análoga à cache em GPUs) opera com banda de aproximadamente 50 a 100 vezes superior à memória global, confirmando o princípio da hierarquia de memória segundo o qual níveis de armazenamento mais próximos da unidade de processamento oferecem latência reduzida e maior taxa de transferência, à custa de menor capacidade (Página 59-60).
+- **Onde Encaixar no Artigo LaTeX:** Fundamentação Teórica (Hierarquia de Memória — papel da Cache).
+- **Mapeamento de Colunas e Arquivos de Teste:** Fundamenta teoricamente a discussão sobre o papel da memória Cache L3 (6 MB na Máquina D) frente à RAM principal: assim como a memória local supera a global por estar mais próxima do processamento, a Cache L3 reduz a necessidade de acessos à RAM DDR4, mitigando o gargalo de Von Neumann. Não há coluna direta de "cache hit/miss" nos arquivos HWiNFO64 fornecidos, mas a relação pode ser inferida indiretamente cruzando 'Relógios efetivos núcleo (avg) (MHz)' com o score `Single_Core`/`Multi_Core`.
+
+> **NOTA PREDITIVA (Diretriz Seção 3):** Caso as Máquinas A, B ou C apresentem caches L3 de tamanhos distintos da Máquina D (6 MB), este trecho teórico e seu respectivo mapeamento de colunas foram devidamente fichados de forma preditiva e só serão utilizados na redação final conforme as configurações reais de hardware das Máquinas A, B ou C forem preenchidas pelo grupo nas próximas interações, se necessário.
+
+---
+
+### 3.7. Conceito/Teoria: Paralelismo a Nível de Thread — Hyper-Threading e Saturação de Núcleos Físicos
+
+- **Citação Direta (Ipsis Litteris):** "At twelve threads, our processor can dedicate one core to each thread because it has a total of 12 cores. Once we transition to 24 threads though, 12 of the 24 threads become 'virtual' threads that are implemented at the software level. [...] running two threads on a single core can sometimes produce slower execution times than using a single thread per core." (Página 71).
+- **Paráfrase (Citação Indireta Acadêmica):** Os autores observam que, ao escalar a contagem de threads de 12 para 24 em um processador com 12 núcleos físicos (2× Intel Xeon X5650, 6 núcleos/12 threads cada), três dos sete benchmarks testados (Rodinia/Burkardt) apresentaram queda de desempenho, pois threads excedentes passam a ser "virtuais" (Hyper-Threading), compartilhando recursos de execução de um mesmo núcleo físico, o que pode degradar o tempo de execução em vez de melhorá-lo (Página 70-71).
+- **Onde Encaixar no Artigo LaTeX:** Fundamentação Teórica (Paralelismo a Nível de Instrução e Thread — Cores físicos vs. Threads lógicos).
+- **Mapeamento de Colunas e Arquivos de Teste:** Sustenta diretamente a discussão sobre a Máquina D (Intel Core i5-8265U, 4 núcleos físicos / 8 threads lógicos via Hyper-Threading). Esta citação fundamenta teoricamente por que o score `Multi_Core` do Geekbench 6 não necessariamente escala de forma linear com o número de threads lógicos disponíveis. Nos arquivos `.CSV`, recomenda-se cruzar as colunas individuais 'Core 0 T0 Uso (%)' a 'Core 3 T1 Uso (%)' para verificar se ambas as threads de cada núcleo físico atingem alta utilização simultânea durante o teste Multi-Core, o que evidenciaria saturação do núcleo físico característica do Hyper-Threading.
+
+---
+
+### 3.8. Conceito/Teoria: Speedup Proporcionado por Paralelismo Multicore (Auto-Parallel)
+
+- **Citação Direta (Ipsis Litteris):** "Overall, the multicore run through produced a 21.2% increase in speed over than of single thread run." referindo-se ao SPEC CPUINT2006 (Página 67); e "there was an average total speedup of 43.64% for the SPEC CPU2006 floating point suite." (Página 69).
+- **Paráfrase (Citação Indireta Acadêmica):** Os resultados demonstram que a habilitação de paralelismo automático multicore (*auto-parallel*) produziu ganho médio de 21,2% no conjunto de benchmarks de inteiros (CPUINT2006) e de 43,64% no conjunto de benchmarks de ponto flutuante (CFP2006), evidenciando que operações de ponto flutuante — computacionalmente mais complexas — beneficiam-se proporcionalmente mais da distribuição de carga entre múltiplos núcleos do que operações inteiras simples (Página 67-69).
+- **Onde Encaixar no Artigo LaTeX:** Fundamentação Teórica (Paralelismo a Nível de Thread) e Resultados e Discussão (se houver comparação Single-Core vs. Multi-Core no Geekbench 6).
+- **Mapeamento de Colunas e Arquivos de Teste:** Sustenta diretamente a comparação entre as colunas `Single_Core` e `Multi_Core` dos arquivos `scores_maq*.txt`: o percentual de ganho do score Multi-Core sobre o Single-Core em cada máquina pode ser interpretado à luz deste mesmo princípio de speedup por paralelismo, ainda que o Geekbench 6 utilize cargas de trabalho mistas (inteiras e de ponto flutuante) em seus subtestes, e não suítes isoladas como o SPEC CPU2006.
+
+---
+
+### 3.9. Conceito/Teoria: Pipelining como Mecanismo de Sincronização e Competitividade da CPU frente à GPU
+
+- **Citação Direta (Ipsis Litteris):** "Advancements in CPU pipelining, however, allow the CPU to begin the next instruction while the current one is executing. [...] We believe that is the uniqueness of CPU pipelining that allows it to compete with the GPU in execution time for this benchmark." (Página 57).
+- **Paráfrase (Citação Indireta Acadêmica):** No benchmark Speckle Reducing Anisotropic Diffusion (SRAD), que demanda sincronização sequencial entre etapas de processamento, a CPU alcançou tempo de execução equivalente ao da GPU, fenômeno atribuído pelos autores à capacidade de pipelining da CPU, que permite iniciar a execução da próxima instrução antes da conclusão da instrução corrente, compensando parcialmente a menor quantidade de unidades de execução paralela disponíveis em relação à GPU (Página 57).
+- **Onde Encaixar no Artigo LaTeX:** Fundamentação Teórica (Paralelismo a Nível de Instrução — ILP, *Instruction-Level Parallelism*).
+- **Mapeamento de Colunas e Arquivos de Teste:** Não há coluna direta de medição de profundidade de pipeline nos arquivos HWiNFO64 fornecidos; este conceito serve apenas como embasamento teórico qualitativo para discutir por que processadores de poucos núcleos (como o i5-8265U, 4 núcleos, da Máquina D) ainda assim apresentam desempenho competitivo no subteste Single-Core do Geekbench 6.
+
+---
+
+### 3.10. Conceito/Teoria: Throttling Implícito por Limitação de Clock Base (Discussão sobre Frequência Nominal vs. Operacional)
+
+- **Citação Direta (Ipsis Litteris):** "2x – Intel Xeon X5650 processors running at 1.6 GHz. The processor is capable by factory default to run at 2.67GHz." (Página 53).
+- **Paráfrase (Citação Indireta Acadêmica):** Os autores relatam que os processadores Intel Xeon X5650 utilizados no experimento operaram a 1,6 GHz durante os testes, valor inferior à frequência nominal de fábrica de 2,67 GHz, sem detalhar explicitamente a causa dessa redução — o que pode ser atribuído a configurações de BIOS, gerenciamento de energia do sistema operacional, ou política de economia de energia do servidor (Página 53).
+- **Onde Encaixar no Artigo LaTeX:** Fundamentação Teórica (Termodinâmica e Arquitetura — Thermal Throttling), com ressalva metodológica sobre causas alternativas de redução de clock (não exclusivamente térmicas).
+- **Mapeamento de Colunas e Arquivos de Teste:** Relevante como contraponto metodológico: ao discutirmos 'Estrangulamento térmico do núcleo (avg) (Yes/No)' e 'Relógios núcleo (avg) (MHz)' nos arquivos `.CSV`, devemos diferenciar quedas de clock por throttling térmico (detectável via coluna de flag booleana) de quedas por configuração de TDP/BIOS (como no caso do Xeon X5650 do artigo), evitando atribuir toda variação de frequência exclusivamente a efeitos termodinâmicos.
+
+---
+
+### 3.11. Conceito/Teoria: Largura de Banda de Memória GPU — Limite Teórico vs. Realizado (Análogo ao Gargalo Single/Dual Channel)
+
+- **Citação Direta (Ipsis Litteris):** "Just looking at the specifications for the GeForce GTX460 we can see that its maximum memory bandwidth is clocked at 115.2 GB/sec which is far in excess of the 32 GB/sec we have with the current transfer standard." (Página 58).
+- **Paráfrase (Citação Indireta Acadêmica):** Os autores apontam uma discrepância significativa entre a largura de banda teórica da memória da GPU GeForce GTX 460 (115,2 GB/s) e a largura de banda efetivamente disponível para transferência de dados via barramento PCIe (32 GB/s na versão 3.0), demonstrando que o subsistema de interconexão (barramento) frequentemente constitui o fator limitante de desempenho, e não o processador ou a memória em si (Página 58).
+- **Onde Encaixar no Artigo LaTeX:** Fundamentação Teórica (Gargalo de Von Neumann — comparação conceitual com Single-Channel vs. Dual-Channel).
+- **Mapeamento de Colunas e Arquivos de Teste:** Sustenta por analogia a discussão sobre a RAM DDR4 Single-Channel (1333 MHz) da Máquina D: assim como o barramento PCIe limita o aproveitamento da banda teórica da memória da GPU, a configuração Single-Channel da RAM da Máquina D limita o aproveitamento da banda teórica do controlador de memória do processador, restringindo o desempenho de aplicações sensíveis à largura de banda (memory-bound), mensurável por 'Relógio da memória (MHz)' e 'Carga da memória física (%)' nos arquivos `.CSV`.
+
+> **NOTA PREDITIVA (Diretriz Seção 3):** Caso as Máquinas A, B ou C operem com configuração de memória Dual-Channel ou frequências superiores a 1333 MHz, este trecho teórico e seu respectivo mapeamento de colunas foram devidamente fichados de forma preditiva e só serão utilizados na redação final conforme as configurações reais de hardware das Máquinas A, B ou C forem preenchidas pelo grupo nas próximas interações, se necessário.
+
+---
+
+### 3.12. Conceito/Teoria: Arquitetura SIMD e Hierarquia de Threads em GPU (CUDA/Warps)
+
+- **Citação Direta (Ipsis Litteris):** "This type of parallelism is known as single instruction multiple data (SIMD)." e "A warp is a group of 32 threads; the smallest data size for a SIMD setup." (Páginas 14 e 15).
+- **Paráfrase (Citação Indireta Acadêmica):** A arquitetura CUDA organiza a execução paralela segundo o paradigma SIMD (*Single Instruction, Multiple Data*), no qual um conjunto de 32 threads — denominado *warp* — executa simultaneamente a mesma instrução sobre dados distintos, sendo essa a menor granularidade de escalonamento na arquitetura Fermi da NVIDIA (Página 14-15).
+- **Onde Encaixar no Artigo LaTeX:** Fundamentação Teórica (Paralelismo a Nível de Instrução e Thread), como contraponto arquitetural ao modelo MIMD (*Multiple Instruction, Multiple Data*) tipicamente empregado em CPUs multicore.
+- **Mapeamento de Colunas e Arquivos de Teste:** Não há GPU dedicada com arquitetura CUDA em nossas Máquinas A-D (apenas GPUs integradas/discretas de baixo desempenho, como a MX130 da Máquina D); este conceito serve exclusivamente como contraste teórico entre os paradigmas SIMD (GPU) e o paradigma predominantemente MIMD/superscalar das CPUs Intel testadas, reforçando por que o Geekbench 6 mede desempenho de CPU sob lógica distinta da GPU.
+
+---
+
+### 3.13. Conceito/Teoria: Simulação de Potência e Temperatura por Diferenças de Calor entre Células (Benchmark Hot Spot — Rodinia)
+
+- **Citação Direta (Ipsis Litteris):** "This benchmark runs a simulation of processor power and temperature and how cells affect their neighbors. These calculations are done by a series of differential equations. The differential equations are run on a temperature map by taking power usage into account until the entire map has been normalized." (Página 43).
+- **Paráfrase (Citação Indireta Acadêmica):** O benchmark *Hot Spot*, integrante da suíte Rodinia, modela computacionalmente a relação entre consumo de potência e dissipação térmica em um processador, simulando, por meio de equações diferenciais aplicadas a um mapa de temperatura, como o calor gerado em uma célula de processamento se propaga e afeta as células vizinhas até a estabilização (normalização) do sistema térmico (Página 43).
+- **Onde Encaixar no Artigo LaTeX:** Fundamentação Teórica (Termodinâmica e Arquitetura — Thermal Throttling) e Metodologia (justificativa teórica para o cruzamento de potência e temperatura).
+- **Mapeamento de Colunas e Arquivos de Teste:** Esta é a citação mais diretamente aplicável à correlação entre consumo energético e comportamento térmico que pretendemos investigar nos 80 arquivos `.CSV`. Sustenta teoricamente o cruzamento entre 'Potência total da CPU (W)' e 'CPU Inteira (°C)' / 'Núcleo máximo (°C)', validando a abordagem de tratar dissipação térmica como função direta da potência dissipada por núcleo, célula a célula. É particularmente relevante para as **Máquinas E (Nauan, Ryzen 5 5500, TDP 65 W) e F (Nicolas, i5-14600KF, TDP 125 W)**, ambas desktops montados com TDP base sensivelmente mais elevado que os notebooks (15-45 W), nos quais se espera maior amplitude absoluta de variação de 'Potência total da CPU (W)' e, consequentemente, maior sinal para validar empiricamente o modelo "potência → temperatura" descrito pelos autores. Nestas máquinas, o cruzamento com 'IA: Package-Level RAPL/PBM PL1 (Yes/No)' e 'Limite de desempenho - Térmico (Yes/No)' permite verificar se os limites de projeto (Power Limit 1) estão sendo atingidos antes do estrangulamento térmico propriamente dito.
+
+---
+
+### 3.14. Conceito/Teoria: Integração CPU+GPU no Mesmo Die (Conceito de APU) como Redutor do Gargalo de Transferência
+
+- **Citação Direta (Ipsis Litteris):** "Newer technologies have allowed designers to put both CPUs and GPUs on the same die, the concept behind APUs. This decreases data transfer times and allows for newer instruction sets to incorporate both units." (Página 74).
+- **Paráfrase (Citação Indireta Acadêmica):** Os autores apontam, como recomendação de trabalho futuro, a integração de CPU e GPU em um único die de silício — o conceito de Accelerated Processing Unit (APU) — como estratégia arquitetural capaz de reduzir o tempo de transferência de dados entre as duas unidades de processamento, eliminando parte do gargalo de comunicação via barramento externo discutido anteriormente no relatório (Página 74).
+- **Onde Encaixar no Artigo LaTeX:** Fundamentação Teórica (Gargalo de Von Neumann / Hierarquia de Memória), no contraste entre GPU integrada e GPU dedicada.
+- **Mapeamento de Colunas e Arquivos de Teste:** Fundamenta diretamente a comparação estrutural entre as seis máquinas do grupo quanto à presença de GPU integrada (todas as máquinas notebook — A, B, C, D — possuem GPU integrada Intel/AMD compartilhando memória do sistema, um modelo conceitualmente próximo ao de APU) versus GPU dedicada com barramento próprio (Máquinas A, D, E e F, via PCIe). Nos arquivos `.CSV`, esta distinção arquitetural justifica por que, nas máquinas com GPU integrada ativa durante a carga de trabalho, devem ser cruzadas as colunas 'iGPU VID (V)', 'IGPU Potência (W)' e 'Carga do controlador de memória GPU (%)' contra a 'Carga da memória física (%)' do sistema — já que a GPU integrada não possui VRAM dedicada e disputa a mesma RAM e o mesmo barramento de memória usados pela CPU, fenômeno que o conceito de APU torna explícito. Já nas máquinas com GPU dedicada (RTX 4050 na Máquina A, MX130 na Máquina D, RX 7600 na Máquina E, RTX 3050 na F), o gargalo de transferência discutido no item 3.5/3.11 deste fichamento (limite do barramento PCIe) é o fator dominante, e não o compartilhamento de memória física.
+
+---
+
+### 3.15. Conceito/Teoria: Aumento Histórico da Densidade de Transistores como Vetor de Evolução Microarquitetural
+
+- **Citação Direta (Ipsis Litteris):** "In just over 40 years, we have gone from 740 kHz to the GHz level (over a 1300 % increase) and increased the count of on chip transistors from 2,300 to more than a billion (over a 434,000 % increase)." (Página 3).
+- **Paráfrase (Citação Indireta Acadêmica):** Os autores destacam que, em pouco mais de quatro décadas, a frequência de operação dos processadores cresceu cerca de 1.300%, enquanto a densidade de transistores em um único chip aumentou em mais de 434.000%, evidenciando que a evolução de desempenho dos processadores está muito mais associada ao aumento da densidade de integração (miniaturização, refletida na litografia do processo de fabricação) do que ao aumento bruto da frequência de clock (Página 3).
+- **Onde Encaixar no Artigo LaTeX:** Fundamentação Teórica (introdução histórica sobre evolução de CPUs, antecedendo a discussão de microarquitetura e litografia das máquinas do grupo).
+- **Mapeamento de Colunas e Arquivos de Teste:** Fundamenta teoricamente a comparação entre as litografias das seis máquinas, que abrangem um espectro de processos de fabricação relativamente amplo: 14 nm (Whiskey Lake-U, Máquina D), 12 nm (Zen+, Máquina C), 7 nm (Zen 3, Máquina E) e Intel 7 — equivalente a ~10 nm refinado (Raptor Lake/Raptor Lake-H/-P, Máquinas A, B e F). Não há coluna de "contagem de transistores" ou "litografia" nos arquivos `.CSV` do HWiNFO64 (trata-se de metadado estático de hardware, não de telemetria dinâmica), de modo que esta citação deve ser usada exclusivamente como embasamento teórico-qualitativo na Fundamentação Teórica, relacionando a litografia mais avançada das Máquinas A/B/F (Intel 7) e E (7 nm) a uma expectativa teórica de maior eficiência energética por instrução executada — passível de validação empírica ao cruzarmos a 'Potência total da CPU (W)' média de cada máquina com o score `Multi_Core` do Geekbench 6 (métrica de Desempenho por Watt), comparando-a com a Máquina D (litografia mais antiga, 14 nm).
+
+---
+
+## 4. ELEMENTOS VISUAIS, FÓRMULAS E EQUAÇÕES
+
+### 4.1. Fórmulas Matemáticas/Físicas em LaTeX Puro
+
+O documento não apresenta fórmulas de média e desvio padrão explicitamente escritas em notação matemática formal (apenas os resultados numéricos tabulados nos Apêndices 7.1 a 7.26, com colunas "Average" e "SD"). Contudo, a partir do procedimento descrito (três iterações por subteste, cálculo de média e desvio padrão amostral), a formalização matemática implícita corresponde às equações clássicas a seguir, recomendadas para inclusão na seção de Metodologia do nosso artigo (Página 76, referente aos cálculos tabulados nos Apêndices):
+
+**Média Aritmética:**
+```latex
+\bar{x} = \frac{1}{n} \sum_{i=1}^{n} x_i
+```
+
+**Desvio Padrão Amostral:**
+```latex
+s = \sqrt{\frac{1}{n-1} \sum_{i=1}^{n} (x_i - \bar{x})^2}
+```
+
+Também relevante é a relação de redução computacional do FFT, mencionada textualmente na Página 27: "The number of computations needed is reduced from 2N^2 to 2N Log2 N where N is the number of points necessary for the computation." Formalização sugerida:
+
+```latex
+C_{DFT} = 2N^2 \qquad C_{FFT} = 2N\log_{2}N
+```
+
+### 4.2. Sugestão de Gráficos/Tabelas Correspondentes
+
+Recomenda-se que nosso grupo construa, em Matplotlib, gráficos de barra com hastes de erro (barplot + desvio padrão) para as colunas `Single_Core` e `Multi_Core` dos quatro arquivos `scores_maq*.txt`, replicando visualmente a lógica empregada pelos autores nas Tabelas 1, 2 e 6 do artigo (comparação de tempo médio de execução entre dispositivos, com indicação de variabilidade). Sugere-se também montar, no `main.tex`, uma tabela comparativa de hardware similar à Tabela 3 (GeForce Specification) e à seção 4.1 (Devices) do artigo original, listando para cada Máquina (A, B, C, D): modelo de CPU, núcleos/threads, clock base/boost, cache L3, RAM (capacidade, canal, frequência), armazenamento e GPU — seguindo o padrão de tabela SBC já definido no `sbc-template.sty` (legenda em Helvetica 10pt negrito, posicionada antes do ambiente `tabular`, sem linhas verticais grossas).
+
+---
+
+## 5. SUGESTÕES DE BUSCA PARA O GOOGLE ACADÊMICO
+
+Para ampliar e validar academicamente os conceitos extraídos deste fichamento, recomenda-se as seguintes strings de busca (inglês e português):
+
+1. `CPU GPU FPGA performance benchmark comparison`
+2. `comparação de desempenho CPU GPU FPGA benchmarking`
+3. `SPEC CPU2006 benchmark suite methodology`
+4. `Rodinia benchmark suite heterogeneous computing`
+5. `GPU memory bandwidth PCIe transfer bottleneck`
+6. `gargalo de barramento PCIe transferência de dados GPU`
+7. `Hyper-Threading performance scaling multicore`
+8. `desempenho Hyper-Threading núcleos físicos vs threads lógicos`
+9. `standard deviation benchmark execution time variability`
+10. `desvio padrão amostral tempo de execução benchmark`
+11. `Fermi architecture CUDA warp scheduler SIMD`
+12. `speedup multicore parallel execution floating point integer`
+13. `evolution of benchmarking computer performance evaluation MIS Quarterly`
+14. `FPGA pipelining throughput streaming applications`
+
+---
+
+*Fichamento gerado conforme as diretrizes de processo estabelecidas no arquivo `diretrizes_fichamento_sbc`, com base estrita no conteúdo textual extraído do documento PDF original (124 páginas), sem inserção de dados quantitativos não verificados no texto-fonte.*
