@@ -5,3 +5,4 @@ machine_c,1,20,21,100.0,True,0
 machine_d,1,20,21,100.0,True,0
 machine_e,1,20,21,100.0,True,0
 machine_f,1,0,1,4.8,False,1
+machine_g,0,1,1,4.8,False,2
