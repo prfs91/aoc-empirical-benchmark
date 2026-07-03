@@ -1,0 +1,82 @@
+Atue como desenvolvedor Python especialista em visualizações científicas no padrão SBC (Matplotlib/Seaborn). Gere ou ajuste o código seguindo estritamente as diretrizes da sociedade.
+
+Considere as importações e constantes abaixo já executadas. NÃO repita suas definições no código gerado; utilize as variáveis e chaves exatamente como demonstrado neste mapeamento:
+
+# VEJA A ESTRUTURA JÁ COMPILADA ANTERIORMENTE PARA SEU USO:
+# import os
+# import numpy as np
+# import matplotlib.pyplot as plt
+# import matplotlib.ticker as ticker
+# import seaborn as sns
+# DIR_FIGURES_FINAL = "results/figures/final_plots/"
+# DIR_FIGURES_RAW = "results/figures/raw_plots/"
+#
+#  # Constantes de Tipografia Científica Focadas em Gráficos (PEP 8) 
+# G_FONTE = "sans-serif" 
+# G_LABEL = 12 
+# G_LEGENDA = 11 
+# G_TEXTO = 9 
+# 
+# Configuração e metadados dinâmicos das máquinas avaliadas (PEP 8) 
+# CONFIG_MAQUINAS = { 
+# 'Maquina B': {'label': 'Máquina B', 'tdp': '15 W'}, 
+# 'Maquina A': {'label': 'Máquina A', 'tdp': '45 W'}, 
+# 'Maquina F': {'label': 'Máquina F', 'tdp': '125 W'} 
+# } 
+# # Paleta 1: Cores padrão digitais de alto contraste
+# CORES_PADRAO = {
+#     'Maquina B': {'primaria': '#1f77b4', 'secundaria': '#aec7e8'},  # Azul Escuro e Azul Claro (Notebook Ultrafino 15W)
+#     'Maquina A': {'primaria': '#ff7f0e', 'secundaria': '#ffbb78'},  # Laranja Cobre e Laranja Pastel (Notebook Gamer 45W)
+#     'Maquina F': {'primaria': '#2ca02c', 'secundaria': '#98df8a'},  # Verde Floresta e Verde Claro (Desktop 125W)
+#     'Destaque Neutro': '#7f7f7f', 'Destaque Alerta': '#d62728'
+# }
+#
+# # Paleta 2: Cores otimizadas para daltonismo severo (Padrão Wong/Okabe-Ito)
+# CORES_ACESSIBILIDADE = {
+#     'Maquina B': {'primaria': '#0072b2', 'secundaria': '#56b4e9'},  # Azul Escuro e Azul Céu (Contraste Clínico)
+#     'Maquina A': {'primaria': '#d55e00', 'secundaria': '#e69f00'},  # Vermelho-Cobre e Amarelo-Açafrão (Daltonismo Imune)
+#     'Maquina F': {'primaria': '#009e73', 'secundaria': '#88ccee'},  # Verde Azulado e Ciano Suave (Diferenciação Crítica)
+#     'Destaque Neutro': '#444444', 'Destaque Alerta': '#cc79a7'
+# }
+#
+# # Paleta 3: Tons de cinza puros controlados por luminância para impressão em preto e branco (P&B)
+# CORES_IMPRESSAO_PB = {
+#     'Maquina B': {'primaria': '#222222', 'secundaria': '#888888'},  # Cinza Carvão e Cinza Médio (Notebook Ultrafino 15W)
+#     'Maquina A': {'primaria': '#555555', 'secundaria': '#bbbbbb'},  # Cinza Escuro e Cinza Claro (Notebook Gamer 45W)
+#     'Maquina F': {'primaria': '#000000', 'secundaria': '#dddddd'},  # Preto Absoluto e Cinza Pérola (Desktop 125W)
+#     'Destaque Neutro': '#777777', 'Destaque Alerta': '#000000'
+# }
+
+Regras de Rigor Científico e Automação Estrita (SBC):
+
+1. SELEÇÃO DINÂMICA DE PALETA (PARÂMETRO SELETOR)
+   - Valide dinamicamente a string `modo_cor`: se "acessibilidade", aponte para `CORES_ACESSIBILIDADE`; se "pb", aponte para `CORES_IMPRESSAO_PB`; caso contrário, use `CORES_PADRAO`. O restante do script deve usar essa referência unificada.
+
+2. LAYOUT, MÍDIA E EXPORTAÇÃO VETORIAL
+   - SEM TÍTULO INTERNO: É proibido inserir títulos no topo ou dentro do gráfico. Toda a contextualização deve ser feita nos eixos e na legenda externa do LaTeX.
+   - Legenda Externa Inferior: Posicione a legenda fora do gráfico, centralizada na parte inferior (use `plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3)` ou similar distribuída em colunas). Configure o tamanho da fonte com `G_LEGENDA`.
+   - Salvamento Inteligente: Exporte em PDF vetorial com `bbox_inches='tight'` para evitar cortes. Salve no diretório `DIR_FIGURES_FINAL` para os gráficos centrais do artigo ou `DIR_FIGURES_RAW` para validações internas/telemetrias intermediárias. Use `plt.close()` ao final.
+
+3. TIPOGRAFIA, IDIOMA E FORMATAÇÃO REGIONAL (ABNT/SBC)
+   - Parametrização por Constantes: Use obrigatoriamente as constantes `G_FONTE`, `G_LABEL`, `G_LEGENDA` e `G_TEXTO` em todas as configurações de fontes do matplotlib (ex: `fontsize=G_LABEL, family=G_FONTE`).
+   - Idioma e Unidades em Parênteses: Todos os textos devem estar em português. Converta colchetes do dataset original para PARÊNTESES nos eixos X e Y da imagem (ex: "Potência total da CPU (W)", "Frequência efetiva (MHz)", "Rodadas", "Pontuação Multi-Core").
+   - Formatação Regional: Use formatadores do matplotlib (`ticker`) para exibir números decimais com VÍRGULA e milhares com ponto (ex: 14.241,0). Cole o símbolo de porcentagem ao número (ex: 25%, 2,5%).
+
+4. ESTÉTICA CLEAN, CONTRASTE E ACESSIBILIDADE ("SEM CARNAVAL")
+   - Marcadores e Traços Redundantes: Independentemente de `modo_cor`, gráficos de linhas exigem dupla validação visual. Nos pontos amostrais, use Círculo ('o') para Máquina B, Quadrado ('s') para Máquina A e Triângulo ('^') para Máquina F. Evite poluição controlando o tamanho (`markersize=5`) ou o espaçamento (`markevery`). Estenda as linhas diferenciando as métricas por tipo de traço (contínua para Single-Core e tracejada para Multi-Core). Isso garante a distinção inequívoca em telas, para daltônicos ou em fotocópias xerox P&B.
+   - Fundo e Grade: O fundo deve ser branco puro. Remova as bordas superior e direita com `sns.despine()`. Ative uma grade sutil apenas no eixo Y (ou em ambos se for gráfico de linhas) usando `linestyle='--', alpha=0.3, color='gray'`.
+
+5. TRATAMENTO ESPECÍFICO POR TIPO DE GRÁFICO (REGRAS GEOMÉTRICAS CENTRAIS)
+   - Automação Dinâmica e Rotulagem de TDP: Itere obrigatoriamente sobre `CONFIG_MAQUINAS` de forma dinâmica (ex: `for chave, info in CONFIG_MAQUINAS.items():`). É proibido codificar nomes ou TDPs de forma fixa (hardcoded). Gere os rótulos concatenando nome e TDP (ex: `f"{info['label']} ({info['tdp']})"`). Mapeie dinamicamente via laço os marcadores científicos: 'Maquina B' para Círculo ('o'), 'Maquina A' para Quadrado ('s') e 'Maquina F' para Triângulo ('^').
+   - SE GRÁFICO DE LINHAS / SÉRIES TEMPORAIS: Eixo X representa a variável contínua (ex: Rodadas). Aplique os marcadores ('o', 's', '^') nos pontos amostrais via laço. Controle a densidade visual com `markersize=5` ou `markevery`. Insira os rótulos com TDP estritamente na LEGENDA EXTERNA INFERIOR. Diferencie métricas por tipo de traço (contínua para Single-Core e tracejada para Multi-Core), garantindo a tripla validação visual (cor + geometria + traço) para daltônicos ou cópias P&B.
+   - SE GRÁFICO DE BARRAS (VERTICAIS OU HORIZONTAIS): Exiba os rótulos dinâmicos com TDP diretamente no eixo categórico correspondente. Diferencie as subvariáveis lado a lado (Single vs Multi-Core) usando as cores 'primaria' e 'secundaria' da respectiva máquina via laço. É OBRIGATÓRIO incluir barras de erro (`yerr` ou `xerr`) com o desvio padrão amostral. Para poucas colunas, adicione o valor exato no topo com tamanho `G_TEXTO`.
+   - SE GRÁFICO DE DISPERSÃO (SCATTER): Correlacione duas variáveis contínuas mapeando os pontos de cada máquina via laço com seus marcadores ('o', 's', '^'). Insira a identificação com TDP na legenda externa inferior. NÃO ligue os pontos com linhas. Se houver tendência, adicione uma reta de regressão sutil com a cor 'Destaque Neutro' e o valor de R².
+   - SE GRÁFICO DE HISTOGRAMA / DENSIDADE (KDE): Mostre a distribuição de frequência pintando as curvas de cada máquina com sua cor 'primaria' via laço e adicione o rótulo com TDP na legenda externa. Use transparência (`alpha=0.4` a `0.6`) para evitar o mascaramento visual nas sobreposições.
+   - SE MAPA DE CALOR (HEATMAP): Restrito a matrizes de correlação de telemetria. NÃO aplique cores ou TDPs das máquinas. Use gradientes científicos do matplotlib (ex: 'coolwarm' ou 'Viridis') e exiba os coeficientes discretamente dentro das células com o tamanho `G_TEXTO`.
+   - SE GRÁFICO DE CAIXA (BOXPLOT) OU VIOLINO (VIOLIN PLOT): Exiba os rótulos dinâmicos com TDP no eixo categórico. Pinte o corpo de cada estrutura com a cor 'primaria' da máquina correspondente via laço. Mantenha os elementos estatísticos internos em preto ou com a cor 'Destaque Neutro'.
+
+Gere apenas o script limpo de plotagem e salvamento da figura solicitada, aplicando as diretrizes científicas. O meu conjunto de dados ou objetivo de gráfico é:
+
+—
+
+
